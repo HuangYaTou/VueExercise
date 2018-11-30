@@ -31,7 +31,7 @@
         <h3>小目标列表</h3>
         <h4>添加小目标</h4>
         <p><input class="todo-input" type="text" placeholder="输入小目标后，按回车键确认" v-model="addText" @keyup.13='addList' @keyup.13="addList"></p>
-        <p>共有<span>{{todoList.length}}</span>个目标，已完成<span>3</span>个，还有<span>1</span>个未完成</p>
+        <p>共有<span>{{todoList.length}}</span>个目标，已完成<span>1</span>个，还有<span>1</span>个未完成</p>
         <div>
             <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('all')" checked>所有目标</div>
             <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('finished')">已完成目标</div>
@@ -39,11 +39,11 @@
         </div>
         <div class="clearfix"></div>
         <ul class="todo-list">
-            <li v-for="list in currList">
+            <li v-for="(list,index) in currList">
                 <div>
-                    <span class="type-span" :class="{'finished': list.status}"></span>
+                    <span class="type-span" :class="{'finished': list.status}" @click="list.status=!list.status"></span>
                     <span>{{list.name}}</span>
-                    <span class="delete fr">x</span>
+                    <span class="delete fr" @click="deleteList(index)">x</span>
                 </div>
             </li>
             <!-- <li>
@@ -64,10 +64,17 @@
             todoList: [
                 {name: 'HTML5', status: false},
                 {name: 'CSS3', status: true},
+                {name: 'VUE', status: true},
             ],
             currList: [],
         },
-        computed: {},
+        computed: {
+            noFinished: function(){
+                return this.todoList.filter(function(item){
+                    return !item.status;
+                });
+            }
+        },
         methods: {
             //添加任务
             addList: function() {
@@ -94,8 +101,13 @@
                         });
                         break;
                 }
+            },
+            //删除
+            deleteList: function(index) {
+                this.todoList.splice(index, 1);
+                this.currList = this.todoList;
             }
-        },d
+        },
         mounted: function() {
             this.currList = this.todoList;
         }
