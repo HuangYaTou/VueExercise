@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>countPrice</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<style type="text/css">
+    * { margin: 0; padding: 0; }
+    body { text-align: center; }
+    table { border-spacing: 0; }
+    .fl { float: left; }
+    .fr { float: right; }
+    .clearfix {
+        zoom: 1;
+    }
+    .clearfix:after {
+        clear: both;
+    }
+    .clearfix:after {
+        width: 0;
+        height: 0;
+        line-height: 0;
+        font-size: 0;
+        content: '';
+        display: block;
+        overflow: hidden;
+        visibility: hidden;
+    }
+    a { text-decoration: none; color: #000; }
+    .text-left { text-align: left; }
+    .red-text { color: orange; font-weight: bold; }
+    .font14 { font-size: 14px; }
+
+    .title { margin: 30px 0 20px 30px; }
+    .wrapper { margin-left: 30px; width: 1100px; border: 1px solid #ccc; }
+    .head { background: #ccc; height: 40px; line-height: 40px; }
+    .main tr { height: 100px; }
+
+    .td-check { width: 100px; }
+    .td-product { width: 400px; }
+    .td-num { width: 200px; }
+    .td-price { width: 100px; }
+    .td-total { width: 200px; }
+    .td-do { width: 100px; }
+
+    .product-img { width: 90px; height: 90px; }
+    .product-info { margin-left: 10px; width: 300px; }
+    .product-num { width: 130px; height: 20px; line-height: 20px; border: 1px solid #ccc; margin: 0 auto; }
+    .num-input { width: 90px; border: none; text-align: center; height: 100%; }
+    .num-do { padding: 0 5px; }
+    .product-delete { display: block; width: 100px; }
+
+    .bottom { height: 40px; line-height: 40px; }
+    .select-delete { margin-left: 30px; }
+    .buy-btn { width: 100px; background: orange; color: #fff; margin-left: 20px; }
+</style>
+</head>
+<body>
+    <p class="title text-left">商品列表</p>
+    <div id="wrapper" class="wrapper">
+        <div class="head">
+            <table>
+                <tr>
+                    <td class="fl td-check text-left"><input type="checkbox" @click="selectAllOrNot(isSelectAll)" v-bind:checked=isSelectAll>全选</td>
+                    <td class="fl td-product">商品</td>
+                    <td class="fl td-num">数量</td>
+                    <td class="fl td-price">单价(元)</td>
+                    <td class="fl td-total">金额(元)</td>
+                    <td class="fl td-do">操作</td>
+                </tr>
+            </table>
+        </div>
+        <div class="main clearfix">
+            <table>
+                <tr v-for="(item, index) in productList">
+                    <td class="td-check text-left"><input type="checkbox" @click="item.select=!item.select" v-bind:checked="item.select"></td>
+                    <td class="td-product">
+                        <img class="product-img fl" :src="item.pro_img">
+                        <div class="product-info text-left font14 fl">
+                            <h6>{{item.pro_name}}</h6>
+                            <p>品牌：{{item.pro_brand}}，产地：{{item.pro_palce}}</p>
+                            <p>规格：{{item.pro_purity}}，起订量：{{item.pro_min}}</p>
+                            <p>配送仓储：{{item.pro_depot}}</p>
+                        </div>
+                        <div class="clearfix"></div>
+                    </td>
+                    <td class="td-num">
+                        <div class="product-num">
+                            <a href="#" class="num-reduce num-do fl" @click="changeBuyNum(item, -1)">-</a>
+                            <input type="text" class="num-input fl" v-model="item.pro_num">
+                            <a href="#" class="num-add num-do fr" @click="changeBuyNum(item, 1)">+</a>
+                        </div>
+                    </td>
+                    <td class="td-price">
+                        <p class="red-text">￥<span class="price-text">{{item.pro_price.toFixed(2)}}</span></p>
+                    </td>
+                    <td class="td-total">
+                        <p class="red-text">￥<span class="price-text">{{(item.pro_num*item.pro_price).toFixed(2)}}</span></p>
+                    </td>
+                    <td class="to-do">
+                        <a href="#" class="product-delete" @click="deleteCurrent(index)">删除</a>
+                    </td>
+                </tr>
+                <!-- <tr>
+                    <td class="td-check text-left"><input type="checkbox"></td>
+                    <td class="td-product">
+                        <img class="product-img fl" src="images/j.png">
+                        <div class="product-info text-left font14 fl">
+                            <h6>名称名称</h6>
+                            <p>品牌：韩国，产地：韩国品牌：韩国，产地：韩国</p>
+                            <p>规格/纯度：99.7%</p>
+                            <p>配送仓储：上海仓储仓储</p>
+                        </div>
+                        <div class="clearfix"></div>
+                    </td>
+                    <td class="td-num">
+                        <div class="product-num">
+                            <a href="#" class="num-reduce num-do fl">-</a>
+                            <input type="text" class="num-input fl" value="3">
+                            <a href="#" class="num-add num-do fr">+</a>
+                        </div>
+                    </td>
+                    <td class="td-price">
+                        <p class="red-text">￥<span class="price-text">800.00</span></p>
+                    </td>
+                    <td class="td-total">
+                        <p class="red-text">￥<span class="price-text">800.00</span></p>
+                    </td>
+                    <td class="to-do">
+                        <a href="#" class="product-delete">删除</a>
+                    </td>
+                </tr> -->
+            </table>
+            <div class="bottom">
+                <a href="#" class="fl select-delete" @click="deleteSelect()">删除所选商品</a>
+                <a href="#" class="buy-btn fr">去结算</a>
+                <p class="fr"><span id="buy-num" class="red-text">{{getTotal.totalNum}}</span>件商品，总计(不含运费)：<span id="buy-price" class="red-text">{{getTotal.totalPrice}}</span></p>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+
+<script src="../js/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#wrapper',
+        data: {
+            productList: [{
+                'pro_name': '【每日坚果】',
+                'pro_brand': '良品铺子',
+                'pro_palce': '中国',
+                'pro_purity': '袋装',
+                'pro_min': '1kg',
+                'pro_depot': '广东地区仓库',
+                'pro_num': 1,
+                'pro_img': 'images/j.png',
+                'pro_price': 130
+            }, {
+                'pro_name': '【猪肉脯】',
+                'pro_brand': '三只松鼠',
+                'pro_palce': '中国',
+                'pro_purity': '袋装',
+                'pro_min': '0.5kg',
+                'pro_depot': '华中地区仓库',
+                'pro_num': 2,
+                'pro_img': 'images/j.png',
+                'pro_price': 30
+            }, {
+                'pro_name': '【夏威夷果】',
+                'pro_brand': '百草味',
+                'pro_palce': '中国',
+                'pro_purity': '袋装',
+                'pro_min': '2kg',
+                'pro_depot': '华中地区仓库',
+                'pro_num': 2,
+                'pro_img': 'images/j.png',
+                'pro_price': 50
+            }],
+        },
+        computed: {
+            isSelectAll: function() {
+                return this.productList.every(function(val){
+                    return val.select;
+                });
+            },
+            getTotal: function(){
+                var _list = this.productList.filter((val)=>val.select);
+                var _price = 0;
+                for(var i=0, len=_list.length; i<len; i++) {
+                    _price+=_list[i].pro_num*_list[i].pro_price;
+                }
+                return {totalNum: len, totalPrice: '￥'+_price};
+            }
+        },
+        methods: {
+            //添加/减少商品数量
+            changeBuyNum: function(item, _num) {
+                if( item.pro_num <= 0 && _num < 0 ) return;  //数量不能小于0
+                item.pro_num += _num;
+            },
+            //全选/全不选
+            selectAllOrNot: function(_isSelect) {
+                console.log('_isSelect='+_isSelect);
+                this.productList.forEach((item)=>item.select=!_isSelect);
+            },
+            //删除所选商品
+            deleteSelect: function() {
+                this.productList = this.productList.filter(function(item) {
+                    return !item.select;
+                });
+            },
+            //删除单个商品
+            deleteCurrent: function(index) {
+                this.productList.splice(index, 1);
+            }
+        },
+        mounted: function() {
+            var _this = this;
+            this.productList.map(function(item) {
+                _this.$set(item, 'select', true);
+            });
+        }
+    });
+</script>
+</body>
+</html>

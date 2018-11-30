@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>todolist</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<style type="text/css">
+    ul, li { margin: 0; padding: 0; }
+    .fl { float: left; }
+    .fr { float: right; }
+    .clearfix { clear: both; zoom: 1; }
+
+    .wrapper { margin: 30px 0 0 30px; padding: 20px; width: 800px; border: 1px solid #ccc; }
+    .todo-input { width: 400px; height: 40px; line-height: 40px; padding: 0 10px; font-size: 16px; }
+    .todo-type { margin-right: 20px; }
+
+    .todo-list { list-style: none; margin-top: 20px; }
+    .todo-list li { line-height: 40px; padding: 0 10px; }
+
+    .type-span { display: inline-block; width: 12px; height: 12px; background: #ccc; }
+    .finished { background: orange; }
+    .delete { cursor: pointer; color: orange; visibility: hidden; }
+    li:hover { border: 1px solid orange; }
+    li:hover .delete { visibility: visible; }
+</style>
+</head>
+<body>
+    <div id="wrapper" class="wrapper">
+        <h3>小目标列表</h3>
+        <h4>添加小目标</h4>
+        <p><input class="todo-input" type="text" placeholder="输入小目标后，按回车键确认" v-model="addText" @keyup.13='addList' @keyup.13="addList"></p>
+        <p>共有<span>{{todoList.length}}</span>个目标，已完成<span>3</span>个，还有<span>1</span>个未完成</p>
+        <div>
+            <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('all')" checked>所有目标</div>
+            <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('finished')">已完成目标</div>
+            <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('unfinished')">未完成目标</div>
+        </div>
+        <div class="clearfix"></div>
+        <ul class="todo-list">
+            <li v-for="list in currList">
+                <div>
+                    <span class="type-span" :class="{'finished': list.status}"></span>
+                    <span>{{list.name}}</span>
+                    <span class="delete fr">x</span>
+                </div>
+            </li>
+            <!-- <li>
+                <div>
+                    <span class="type-span"></span>
+                    <span>menu222222222</span>
+                    <span class="delete fr">x</span>
+                </div>
+            </li> -->
+        </ul>
+    </div>
+<script src="../js/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#wrapper',
+        data: {
+            addText: "",
+            todoList: [
+                {name: 'HTML5', status: false},
+                {name: 'CSS3', status: true},
+            ],
+            currList: [],
+        },
+        computed: {},
+        methods: {
+            //添加任务
+            addList: function() {
+                this.todoList.push({
+                    name: this.addText,
+                    status: false
+                });
+                this.addText = '';
+            },
+            //切换选项
+            chooseList: function(_type) {
+                switch(_type){
+                    case 'all':
+                        this.currList = this.todoList;
+                        break;
+                    case 'finished':
+                        this.currList = this.todoList.filter(function(item) {
+                            return item.status;
+                        });
+                        break;
+                    case 'unfinished':
+                        this.currList = this.todoList.filter(function(item){
+                            return !item.status;
+                        });
+                        break;
+                }
+            }
+        },d
+        mounted: function() {
+            this.currList = this.todoList;
+        }
+    });
+</script>
+</body>
+</html>
