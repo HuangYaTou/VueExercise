@@ -24,6 +24,10 @@
     .delete { cursor: pointer; color: orange; visibility: hidden; }
     li:hover { border: 1px solid orange; }
     li:hover .delete { visibility: visible; }
+
+    li.editing div { display: none; }
+    li.editing .text2 { display: block; }
+    .text2 { height: 40px; line-height: 40px; margin-left: 15px; width: 80%; font-size: 16px; display: none; }
 </style>
 </head>
 <body>
@@ -31,7 +35,7 @@
         <h3>小目标列表</h3>
         <h4>添加小目标</h4>
         <p><input class="todo-input" type="text" placeholder="输入小目标后，按回车键确认" v-model="addText" @keyup.13='addList' @keyup.13="addList"></p>
-        <p>共有<span>{{todoList.length}}</span>个目标，已完成<span>1</span>个，还有<span>1</span>个未完成</p>
+        <p>共有<span>{{todoList.length}}</span>个目标，已完成<span>{{todoList.length-noFinished}}</span>个，还有<span>{{noFinished}}</span>个未完成</p>
         <div>
             <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('all')" checked>所有目标</div>
             <div class="fl todo-type"><input type="radio" name="type" @click="chooseList('finished')">已完成目标</div>
@@ -39,12 +43,13 @@
         </div>
         <div class="clearfix"></div>
         <ul class="todo-list">
-            <li v-for="(list,index) in currList">
+            <li v-for="(list,index) in currList" :class="{'editing': currIndex===index}">
                 <div>
-                    <span class="type-span" :class="{'finished': list.status}" @click="list.status=!list.status"></span>
-                    <span>{{list.name}}</span>
-                    <span class="delete fr" @click="deleteList(index)">x</span>
+                    <span class="type-span" :class="{'finished': list.status}" @click="changeType(index)"></span>
+                    <span @dblclick="currIndex=index">{{list.name}}</span>
+                    <span class="delete fr" @click="deleteList(list)">x</span>
                 </div>
+                <input type="text" class="text2" v-model="list.name" @keyup.esc="cancelEdit(list)" @blur="edited" @focus="editBefore(list.name)" @keyup.enter="edited" >
             </li>
             <!-- <li>
                 <div>
@@ -67,16 +72,19 @@
                 {name: 'VUE', status: true},
             ],
             currList: [],
+            currType: 'all',
+            currIndex: '',
+            beforeEditName: '',
         },
         computed: {
             noFinished: function(){
                 return this.todoList.filter(function(item){
                     return !item.status;
-                });
+                }).length;
             }
         },
         methods: {
-            //添加任务
+            //添加任务，状态为false
             addList: function() {
                 this.todoList.push({
                     name: this.addText,
@@ -84,8 +92,9 @@
                 });
                 this.addText = '';
             },
-            //切换选项
+            //切换状态
             chooseList: function(_type) {
+                this.currType = _type;
                 switch(_type){
                     case 'all':
                         this.currList = this.todoList;
@@ -102,14 +111,41 @@
                         break;
                 }
             },
-            //删除
-            deleteList: function(index) {
+            //改变单条数据的完成状态
+            changeType: function(index) {
+                this.currList[index].status = !this.currList[index].status;
+                //更新数据
+                this.chooseList(this.currType);
+            },
+            //删除某条数据
+            deleteList: function(item) {
+                var index = this.todoList.indexOf(item);
                 this.todoList.splice(index, 1);
-                this.currList = this.todoList;
+                this.chooseList(this.currType);
+            },
+            //修改前
+            editBefore: function(name) {
+                this.beforeEditName = name;
+            },
+            //修改后
+            edited: function() {
+                this.currIndex = '';
+            },
+            //取消修改
+            cancelEdit: function(item) {
+                item.name = this.beforeEditName;
+                this.currIndex = '';
             }
         },
         mounted: function() {
             this.currList = this.todoList;
+        },
+        directives: {
+            "focus": {
+                update(el) {
+                    el.focus();
+                }
+            }
         }
     });
 </script>
