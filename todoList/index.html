@@ -49,7 +49,8 @@
                     <span @dblclick="currIndex=index">{{list.name}}</span>
                     <span class="delete fr" @click="deleteList(list)">x</span>
                 </div>
-                <input type="text" class="text2" v-model="list.name" @keyup.esc="cancelEdit(list)" @blur="edited" @focus="editBefore(list.name)" @keyup.enter="edited" >
+                <input type="text" class="text2" v-model="list.name" @keyup.esc="cancelEdit(list)" @blur="edited" @focus="editBefore(list.name)" @keyup.enter="edited" v-focus>
+
             </li>
             <!-- <li>
                 <div>
